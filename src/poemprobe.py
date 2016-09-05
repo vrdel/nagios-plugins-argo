@@ -88,7 +88,7 @@ def verify_servercert(host, timeout, capath):
                 break
 
         server_subject = server_cert_chain[-1].get_subject()
-        if host not in server_subject.CN:
+        if host != server_subject.CN:
             raise PyOpenSSLError('CN does not match %s' % host)
 
         global server_expire
