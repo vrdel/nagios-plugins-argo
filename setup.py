@@ -2,7 +2,7 @@ from distutils.core import setup
 import glob, sys
 
 NAME='nagios-plugins-argo'
-DIR='/usr/lib/nagios/plugins/argo/'
+NAGIOSPLUGINS='/usr/lib64/nagios/plugins/argo/'
 
 def get_ver():
     try:
@@ -16,15 +16,19 @@ def get_ver():
 
 setup(name=NAME,
       version=get_ver(),
+      license='ASL 2.0',
       author='SRCE, GRNET',
       author_email='dvrcic@srce.hr, themis@grnet.gr',
-      description='''
-        This package includes probes for ARGO components.
-        Currently it supports the following components:
-            - ARGO Web API
-            - POEM''',
+      description='Package include probes for ARGO components',
+      platforms='noarch',
+      long_description='''
+      This package includes probes for ARGO components.
+      Currently it supports the following components:
+        - ARGO Web API
+        - POEM
+      ''',
       url='http://argoeu.github.io/',
-      data_files=[(DIR, glob.glob('src/*'))],
+      data_files=[(NAGIOSPLUGINS, glob.glob('src/*'))],
       packages=['nagios_plugins_argo'],
       package_dir={'nagios_plugins_argo': 'modules/'},
       )

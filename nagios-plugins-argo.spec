@@ -1,3 +1,5 @@
+# sitelib
+%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %define dir %{_libdir}/nagios/plugins/argo
 
 Name: nagios-plugins-argo
@@ -24,12 +26,13 @@ Currently it supports the following components:
 %{__python} setup.py build
 
 %install
-rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install --root $RPM_BUILD_ROOT --record=INSTALLED_FILES
-install -d -m 755 $RPM_BUILD_ROOT/%{dir}
+rm -rf %{buildroot}
+%{__python} setup.py install --skip-build --root %{buildroot} --record=INSTALLED_FILES
+install -d -m 755 %{buildroot}/%{dir}
+install -d -m 755 %{buildroot}/%{python_sitelib}/nagios_plugins_argo
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files -f INSTALLED_FILES
 %defattr(-,root,root,-)
