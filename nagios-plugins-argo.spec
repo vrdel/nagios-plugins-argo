@@ -1,22 +1,23 @@
 # sitelib
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%define dir %{_libdir}/nagios/plugins/argo
+%define dir /usr/libexec/argo-monitoring/probes/argo
 
 Name: nagios-plugins-argo
 Summary: ARGO components related probes.
-Version: 0.1.2
+Version: 0.1.3
 Release: 1%{?dist}
 License: ASL 2.0
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Group: Network/Monitoring
 BuildArch: noarch
-Requires: python-requests, pyOpenSSL, python-argparse
+Requires: python-requests, pyOpenSSL, python-argparse, nagios-plugins-file_age, curl
 
 %description
 This package includes probes for ARGO components. 
 Currently it supports the following components:
  - ARGO Web API
+ - ARGO Consumer log
  - POEM
 
 %prep
@@ -41,6 +42,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Mar 9 2017 Emir Imamagic <eimamagi@srce.hr> - 0.1.3-1%{dist}
+- Added consumer log probe & deps
 * Tue Nov 1 2016 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.2-1%{?dist}
 - install as py module to ease the work for upcoming probes
 * Mon Sep 5 2016 Daniel Vrcic <daniel.vrcic@gmail.com>, Filip Mendusic <filip.mendjusic@gmail.com> - 0.1.1-1%{?dist}

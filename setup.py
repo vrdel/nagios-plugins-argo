@@ -2,7 +2,7 @@ from distutils.core import setup
 import glob, sys
 
 NAME='nagios-plugins-argo'
-NAGIOSPLUGINS='/usr/lib64/nagios/plugins/argo/'
+NAGIOSPLUGINS='/usr/libexec/argo-monitoring/probes/argo'
 
 def get_ver():
     try:
@@ -25,6 +25,7 @@ setup(name=NAME,
       This package includes probes for ARGO components.
       Currently it supports the following components:
         - ARGO Web API
+        - ARGO Consumer log
         - POEM
       ''',
       url='http://argoeu.github.io/',
