@@ -21,6 +21,7 @@ from time import sleep
 
 HOSTCERT = "/etc/grid-security/hostcert.pem"
 HOSTKEY = "/etc/grid-security/hostkey.pem"
+CAPATH = "/etc/grid-security/certificates/"
 
 MIP_API = '/poem/api/0.2/json/metrics_in_profiles?vo_name=ops'
 PR_API = '/poem/api/0.2/json/profiles'
@@ -107,7 +108,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-H', dest='hostname', required=True, type=str, help='hostname')
     parser.add_argument('-r', dest='profile', required=True, type=str, help='profile name')
-    parser.add_argument('--capath', dest='capath', required=True, type=str, help='CA directory')
+    parser.add_argument('--capath', dest='capath', default=CAPATH, type=str, help='CA directory')
     parser.add_argument('-t', dest='timeout', required=True, type=int, default=180)
     arguments = parser.parse_args()
 
