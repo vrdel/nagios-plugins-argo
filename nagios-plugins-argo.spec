@@ -17,6 +17,7 @@ Requires: python-requests, pyOpenSSL, python-argparse, nagios-plugins-file_age, 
 This package includes probes for ARGO components. 
 Currently it supports the following components:
  - ARGO Web API
+ - ARGO Consumer log
  - POEM
 
 %prep
