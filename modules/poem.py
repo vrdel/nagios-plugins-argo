@@ -88,10 +88,6 @@ def verify_servercert(host, timeout, capath):
             if iosock_try():
                 break
 
-        server_subject = server_cert_chain[-1].get_subject()
-        if host != server_subject.CN:
-            raise PyOpenSSLError('CN does not match %s' % host)
-
         global server_expire
         server_expire = server_cert_chain[-1].get_notAfter()
 
