@@ -9,7 +9,7 @@ NAGIOS_ERROR=2
 NAGIOS_UNKNOWN=3
 
 print_usage() {
-  echo "Usage: $PROGNAME [-url API endpoint] [-auth_token ewrwerew2332] [-day days to check (ex. yesterday, 2 days ago) default yesterday] [-debug on or off (default off)]" 
+  echo "Usage: $PROGNAME [-url API endpoint] [-auth_token ewrwerew2332] [-day days to check (ex. yesterday, 2 days ago) default yesterday] [-debug on or off (default off)] [-type status or ar (default ar)]" 
 }
 
 print_help() {
@@ -17,7 +17,7 @@ print_help() {
 	echo ""
 	print_usage
 	echo ""
-	echo "This plugin checks ARGO api if has A/R results for the specified day"
+	echo "This plugin checks ARGO api for or A/R results for the specified day"
 	echo ""
 	exit $NAGIOS_OK
 }
@@ -64,6 +64,11 @@ while test -n "$1"; do
             DEBUG=$2
             shift
             ;;
+        -type)
+            TYPE=$2
+            shift
+            ;;
+
         *)
             echo "Unknown argument: $1"
             print_usage
@@ -90,12 +95,27 @@ if [ -z "$DEBUG" ]
     DEBUG="off"
 fi
 
+if [ -z "$TYPE" ]
+  then
+    TYPE="ar"
+fi
+
 day_start=$(date --utc --date="$CHECK_DAY" +"%Y-%m-%dT00:00:00Z") 
 day_end=$(date --utc --date="$CHECK_DAY" +"%Y-%m-%dT23:59:59Z") 
-API_URL="$CHECK_URL?start_time=$day_start&end_time=$day_end&granularity=daily"
+if [ $TYPE == "ar"  ]
+  then
+   API_URL="$CHECK_URL?start_time=$day_start&end_time=$day_end&granularity=daily"
+   STRING="availability"
+   curlResult=`curl --connect-timeout 10 -s  -X GET -H "Accept:application/json" -H "Content-Type:application/json" -H "x-api-key: $AUTH_TOKEN" $API_URL`
+fi
 
-STRING="availability"
-curlResult=`curl --connect-timeout 10 -s  -X GET -H "Accept:application/json" -H "Content-Type:application/json" -H "x-api-key: $AUTH_TOKEN" $API_URL`
+if [ $TYPE == "status"  ]
+  then
+   API_URL="$CHECK_URL?start_time=$day_start&end_time=$day_end"
+   STRING="statuses"
+   curlResult=`curl --connect-timeout 10 -s  -X GET -H "Accept:application/json" -H "Content-Type:application/json" -H "x-api-key: $AUTH_TOKEN" $API_URL`
+fi
+
 
 if [ $DEBUG == "on"  ]
   then
