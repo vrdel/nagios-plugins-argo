@@ -123,13 +123,13 @@ def main():
 
     # verify client certificate
     try:
-        requests.get('https://' + arguments.hostname + '/poem/', cert=(HOSTCERT, HOSTKEY), verify=False)
+        requests.get('https://' + arguments.hostname + '/poem/', cert=(HOSTCERT, HOSTKEY), verify=True)
     except requests.exceptions.RequestException as e:
         print "CRITICAL - Client certificate verification failed: %s" % errmsg_from_excp(e)
         raise SystemExit(2)
 
     try:
-        metrics = requests.get('https://' + arguments.hostname + MIP_API, cert=(HOSTCERT, HOSTKEY), verify=False)
+        metrics = requests.get('https://' + arguments.hostname + MIP_API, cert=(HOSTCERT, HOSTKEY), verify=True)
         metricsjson = metrics.json()
     except requests.exceptions.RequestException as e:
         print 'CRITICAL - cannot connect to %s: %s' % ('https://' + arguments.hostname + MIP_API,
@@ -137,7 +137,7 @@ def main():
         raise SystemExit(2)
 
     try:
-        profiles = requests.get('https://' + arguments.hostname + '/poem/api/0.2/json/profiles', cert=(HOSTCERT, HOSTKEY), verify=False)
+        profiles = requests.get('https://' + arguments.hostname + '/poem/api/0.2/json/profiles', cert=(HOSTCERT, HOSTKEY), verify=True)
         profilesjson = profiles.json()
     except requests.exceptions.RequestException as e:
         print 'CRITICAL - cannot connect to %s: %s' % ('https://' + arguments.hostname + PR_API,
