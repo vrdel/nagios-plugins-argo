@@ -104,6 +104,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-H', dest='hostname', required=True, type=str, help='hostname')
     parser.add_argument('-r', dest='profile', required=True, type=str, help='profile name')
+    parser.add_argument('--cert', dest='cert', default=HOSTCERT, type=str, help='Certificate')
+    parser.add_argument('--key', dest='key', default=HOSTKEY, type=str, help='Certificate key')
     parser.add_argument('--capath', dest='capath', default=CAPATH, type=str, help='CA directory')
     parser.add_argument('-t', dest='timeout', required=True, type=int, default=180)
     arguments = parser.parse_args()
@@ -123,13 +125,13 @@ def main():
 
     # verify client certificate
     try:
-        requests.get('https://' + arguments.hostname + '/poem/', cert=(HOSTCERT, HOSTKEY), verify=True)
+        requests.get('https://' + arguments.hostname + '/poem/', cert=(arguments.cert, arguments.key), verify=True)
     except requests.exceptions.RequestException as e:
         print "CRITICAL - Client certificate verification failed: %s" % errmsg_from_excp(e)
         raise SystemExit(2)
 
     try:
-        metrics = requests.get('https://' + arguments.hostname + MIP_API, cert=(HOSTCERT, HOSTKEY), verify=True)
+        metrics = requests.get('https://' + arguments.hostname + MIP_API, cert=(arguments.cert, arguments.key), verify=True)
         metricsjson = metrics.json()
     except requests.exceptions.RequestException as e:
         print 'CRITICAL - cannot connect to %s: %s' % ('https://' + arguments.hostname + MIP_API,
@@ -137,7 +139,7 @@ def main():
         raise SystemExit(2)
 
     try:
-        profiles = requests.get('https://' + arguments.hostname + '/poem/api/0.2/json/profiles', cert=(HOSTCERT, HOSTKEY), verify=True)
+        profiles = requests.get('https://' + arguments.hostname + '/poem/api/0.2/json/profiles', cert=(arguments.cert, arguments.key), verify=True)
         profilesjson = profiles.json()
     except requests.exceptions.RequestException as e:
         print 'CRITICAL - cannot connect to %s: %s' % ('https://' + arguments.hostname + PR_API,
