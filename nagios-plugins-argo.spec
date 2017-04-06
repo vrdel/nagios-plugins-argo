@@ -5,7 +5,7 @@
 Name: nagios-plugins-argo
 Summary: ARGO components related probes.
 Version: 0.1.5
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: ASL 2.0
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -42,6 +42,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Apr 6 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.5-3%{?dist}
+- ARGO-773 POEM probe should have argument for client certificate 
 * Tue Mar 21 2017 Daniel Vrcic <daniel.vrcic@gmail.com>, Themis Zamani <themiszamani@gmail.com> - 0.1.5-2%{?dist}
 - POEM probe verify certs in all request calls to remove warning msg 
 - ARGO-756 [WEB API] - New status check to nagios internal probe
