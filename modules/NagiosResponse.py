@@ -31,5 +31,5 @@ class NagiosResponse:
 		elif self._code == self.CRITICAL:
 			return self._msgBagCritical
 		else:
-			return []
+			return "OK"
 

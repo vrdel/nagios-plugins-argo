@@ -33,10 +33,10 @@ def process_customer_jobs(cust_header, cust_conf, root_dir, date_sufix, nagios):
 					false_count += 1
 					if (false_count == len(date_sufix)):
 						nagios.setCode(nagios.CRITICAL)
-						nagios.writeCriticalMessage("Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", file: " + filename.replace("-ok_", "") + " not ok for last " + str(len(date_sufix)) + " days!")
+						nagios.writeCriticalMessage("CRITICAL - Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", file: " + filename.replace("-ok_", "") + " not ok for last " + str(len(date_sufix)) + " days!")
 					elif (false_count == 1 and nagios.getCode() <= nagios.WARNING):
 						nagios.setCode(nagios.WARNING)
-						nagios.writeWarningMessage("Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", file: " + filename.replace("-ok_", "") + " not ok.")
+						nagios.writeWarningMessage("WARNING - Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", file: " + filename.replace("-ok_", "") + " not ok.")
 
 
 		
