@@ -22,7 +22,7 @@ def check_file_ok(fname):
 def process_customer_jobs(files, cust_header, cust_conf, root_dir, date_sufix, nagios):
 	file_names=['downtimes-ok', 'poem-ok', 'topology-ok', 'weights-ok']
 	if files is not None:
-		file_names = files.split(',')
+		file_names = files
 
 	customer_jobs = cust_conf.get_jobs(cust_header)
 	for job in customer_jobs:
@@ -47,12 +47,12 @@ def process_customer(cmd_options, root_directory, date_sufix, nagios):
 	customer_conf.parse()
 	
 	for cust_header in customer_conf.get_customers():
-		process_customer_jobs(cmd_options.filenames, cust_header, customer_conf, root_directory, date_sufix, nagios)
+		process_customer_jobs(cmd_options.filename, cust_header, customer_conf, root_directory, date_sufix, nagios)
 
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-c', dest='config', required=True, type=str, help='config file')
-	parser.add_argument('-f', dest='filenames', required=False, type=str, help='file names to monitor (comma separated list WITHOUT spaces). Default: downtimes-ok,poem-ok,topology-ok,weights-ok')
+	parser.add_argument('-f', dest='filename', required=False, type=str, nargs='+', help='file names to monitor. Default: downtimes-ok poem-ok topology-ok weights-ok')
 	cmd_options = parser.parse_args()
 	
 	opts =  {"InputState": ["SaveDir", "Days"]}
