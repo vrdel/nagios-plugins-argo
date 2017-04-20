@@ -4,8 +4,8 @@
 
 Name: nagios-plugins-argo
 Summary: ARGO components related probes.
-Version: 0.1.5
-Release: 3%{?dist}
+Version: 0.1.6
+Release: 1%{?dist}
 License: ASL 2.0
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -16,9 +16,10 @@ Requires: python-requests, pyOpenSSL, python-argparse, nagios-plugins-file_age, 
 %description
 This package includes probes for ARGO components. 
 Currently it supports the following components:
- - ARGO Web API
  - ARGO Consumer log
- - POEM
+ - ARGO EGI Connectors
+ - ARGO Web API
+ - POEM service
 
 %prep
 %setup -q 
@@ -42,6 +43,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Apr 20 2017 Hrvoje Sute <sute.hrvoje@gmail.com> - 0.1.6-1%{?dist}
+- ARGO-754 Nagios sensor for connectors component
 * Thu Apr 6 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.5-3%{?dist}
 - ARGO-773 POEM probe should have argument for client certificate 
 * Tue Mar 21 2017 Daniel Vrcic <daniel.vrcic@gmail.com>, Themis Zamani <themiszamani@gmail.com> - 0.1.5-2%{?dist}
