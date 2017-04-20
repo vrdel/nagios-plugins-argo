@@ -18,7 +18,6 @@ class NagiosResponse:
 	def writeCriticalMessage(self, msg):
 		self._msgBagCritical.append(msg)
 
-	
 	def setCode(self, code):
 		self._code = code
 
@@ -27,9 +26,18 @@ class NagiosResponse:
 
 	def getMsg(self):
 		if self._code == self.WARNING:
-			return self._msgBagWarning
+			return "WARNING - " + self._toString(self._msgBagWarning)
 		elif self._code == self.CRITICAL:
-			return self._msgBagCritical
-		else:
+			return "CRITICAL - " + self._toString(self._msgBagCritical)
+		elif self._code == self.OK:
 			return "OK"
+		else:
+			return "UNKNOWN!"
+
+	def _toString(self, msgArray):
+		output = ""
+		for msg in msgArray:
+			output += msg + " "
+
+		return output
 
