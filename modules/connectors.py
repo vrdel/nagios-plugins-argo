@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import sys, os, ipdb
+import sys, os
 import argparse
 
 from datetime import datetime, timedelta
