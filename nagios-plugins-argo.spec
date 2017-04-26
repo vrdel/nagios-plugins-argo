@@ -5,7 +5,7 @@
 Name: nagios-plugins-argo
 Summary: ARGO components related probes.
 Version: 0.1.6
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: ASL 2.0
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -43,6 +43,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Apr 26 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.6-4%{?dist}
+- converted tab to whitespaces 
+- check current date for the downtimes state
 * Wed Apr 26 2017 Hrvoje Sute <sute.hrvoje@gmail.com> - 0.1.6-3%{?dist}
 - More descriptive OK status
 * Tue Apr 25 2017 Hrvoje Sute <sute.hrvoje@gmail.com> - 0.1.6-2%{?dist}
