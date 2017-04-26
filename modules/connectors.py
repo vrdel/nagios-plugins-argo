@@ -2,11 +2,17 @@
 
 import sys, os
 import argparse
+import copy
 
 from datetime import datetime, timedelta
 from pprint import pprint
 from argo_egi_connectors.config import Global, CustomerConf
 from NagiosResponse import NagiosResponse
+
+downtime_state = 'downtimes-ok'
+poem_state = 'poem-ok'
+topology_state = 'topology-ok'
+weights_state = 'weights-ok'
 
 def check_file_ok(fname):
     if os.path.isfile(fname):
@@ -20,23 +26,30 @@ def check_file_ok(fname):
         return 1
 
 def process_customer_jobs(files, cust_header, cust_conf, root_dir, date_sufix, nagios):
-    file_names=['downtimes-ok', 'poem-ok', 'topology-ok', 'weights-ok']
+    file_names=[downtime_state, poem_state, topology_state, weights_state]
     if files is not None:
         file_names = files
 
     customer_jobs = cust_conf.get_jobs(cust_header)
     for job in customer_jobs:
         for filename in file_names:
+            if filename == downtime_state:
+                dates = copy.copy(date_sufix)[:-1]
+                dates.append(datetime.today().strftime("%Y_%m_%d"))
+            else:
+                dates = date_sufix
+
             false_count = 0
-            for sufix in date_sufix:
+
+            for sufix in dates:
                 full_name = cust_conf.get_fullstatedir(root_dir, cust_header, job)+ '/' + filename + '_' + sufix
                 ret_val = check_file_ok(full_name)
 
                 if ret_val != 0:
                     false_count += 1
-                    if (false_count == len(date_sufix)):
+                    if (false_count == len(dates)):
                         nagios.setCode(nagios.CRITICAL)
-                        nagios.writeCriticalMessage("Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", File: " + filename.replace("-ok", "").upper() + " not ok for last " + str(len(date_sufix)) + " days!")
+                        nagios.writeCriticalMessage("Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", File: " + filename.replace("-ok", "").upper() + " not ok for last " + str(len(dates)) + " days!")
                     elif (false_count == 1 and nagios.getCode() <= nagios.WARNING):
                         nagios.setCode(nagios.WARNING)
                         nagios.writeWarningMessage("Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", File: " + filename.replace("-ok", "").upper() + " not ok.")
