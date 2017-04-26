@@ -46,6 +46,7 @@ rm -rf %{buildroot}
 * Wed Apr 26 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.6-4%{?dist}
 - converted tab to whitespaces 
 - check current date for the downtimes state
+- vertical line separator for multiple fail msgs 
 * Wed Apr 26 2017 Hrvoje Sute <sute.hrvoje@gmail.com> - 0.1.6-3%{?dist}
 - More descriptive OK status
 * Tue Apr 25 2017 Hrvoje Sute <sute.hrvoje@gmail.com> - 0.1.6-2%{?dist}
