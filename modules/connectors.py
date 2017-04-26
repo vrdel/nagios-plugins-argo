@@ -71,7 +71,7 @@ def main():
 	for day in days:
 		date_sufix.append(day.strftime("%Y_%m_%d"))
 	
-	nagios = NagiosResponse()
+	nagios = NagiosResponse("All connectors are working fine.")
 	process_customer(cmd_options, root_directory, date_sufix, nagios)
 	
 	print(nagios.getMsg())
