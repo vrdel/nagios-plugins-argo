@@ -43,7 +43,7 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Tue Apr 26 2017 Hrvoje Sute <sute.hrvoje@gmail.com> - 0.1.6-3%{?dist}
+* Wed Apr 26 2017 Hrvoje Sute <sute.hrvoje@gmail.com> - 0.1.6-3%{?dist}
 - More descriptive OK status
 * Tue Apr 25 2017 Hrvoje Sute <sute.hrvoje@gmail.com> - 0.1.6-2%{?dist}
 - Removed debugger lefover module
