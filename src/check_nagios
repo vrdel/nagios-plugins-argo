@@ -22,12 +22,11 @@ use LWP::UserAgent;
 use Nagios::Plugin;
 use GridMon::Nagios qw(nagios_debug);
 use No::Worries::Syslog qw(syslog_open);
-use POSIX qw(strftime);
 
 $SIG{__WARN__} = \&No::Worries::Warn::handler;
 $SIG{__DIE__}  = \&No::Worries::Die::handler;
 
-syslog_open(ident => "CertLifetime-probe", facility => "user");
+syslog_open(ident => "check_nagios", facility => "user");
 nagios_debug("started");
 
 # Standard variables used in Nagios::Plugin constructor
