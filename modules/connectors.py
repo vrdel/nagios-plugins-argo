@@ -50,7 +50,7 @@ def process_customer_jobs(files, cust_header, cust_conf, root_dir, date_sufix, n
                     if (false_count == len(dates)):
                         nagios.setCode(nagios.CRITICAL)
                         nagios.writeCriticalMessage("Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", File: " + filename.replace("-ok", "").upper() + " not ok for last " + str(len(dates)) + " days!")
-                    elif (false_count == 1 and nagios.getCode() <= nagios.WARNING):
+                    elif (false_count == len(dates) - 1 and nagios.getCode() <= nagios.WARNING):
                         nagios.setCode(nagios.WARNING)
                         nagios.writeWarningMessage("Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", File: " + filename.replace("-ok", "").upper() + " not ok.")
 
