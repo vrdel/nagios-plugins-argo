@@ -37,5 +37,5 @@ class NagiosResponse:
             return "UNKNOWN!"
 
     def _toString(self, msgArray):
-        return ' | '.join(msgArray)
+        return ' / '.join(msgArray)
 
