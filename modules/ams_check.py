@@ -23,10 +23,10 @@ def main():
     nagios = NagiosResponse("All messages received correctly.")
     ams = ArgoMessagingService(endpoint=cmd_options.host, token=cmd_options.token, project=cmd_options.project)
     try:
-        if ams.has_topic(cmd_options.topic):
+        if ams.has_topic(cmd_options.topic, timeout=TIMEOUT):
             ams.delete_topic(cmd_options.topic, timeout=TIMEOUT)
 
-        if ams.has_sub(cmd_options.subscription):
+        if ams.has_sub(cmd_options.subscription, timeout=TIMEOUT):
             ams.delete_sub(cmd_options.subscription, timeout=TIMEOUT)
 
         ams.create_topic(cmd_options.topic, timeout=TIMEOUT)
