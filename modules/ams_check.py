@@ -66,6 +66,9 @@ def main():
         if ackids:
             ams.ack_sub(cmd_options.subscription, ackids, timeout=TIMEOUT)
 
+        ams.delete_topic(cmd_options.topic, timeout=TIMEOUT)
+        ams.delete_sub(cmd_options.subscription, timeout=TIMEOUT)
+
     except AmsException as e:
         nagios.writeCriticalMessage(e.msg)
         nagios.setCode(nagios.CRITICAL)
