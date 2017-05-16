@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import random, string, hashlib
-import ipdb
 
 from argparse import ArgumentParser
 from argo_ams_library import ArgoMessagingService, AmsMessage, AmsException
@@ -10,7 +9,7 @@ from NagiosResponse import NagiosResponse
 def main():
     MSG_NUM = 100
     MSG_SIZE = 500
-    TIMEOUT = 10
+    TIMEOUT = 180
 
     parser = ArgumentParser(description="Nagios sensor for AMS")
     parser.add_argument('--host', type=str, default='messaging-devel.argo.grnet.gr', help='FQDN of AMS Service')
@@ -18,19 +17,20 @@ def main():
     parser.add_argument('--project', type=str, required=True, help='Project registered in AMS Service')
     parser.add_argument('--topic', type=str, default='nagios_sensor_topic', help='Given topic')
     parser.add_argument('--subscription', type=str, default='nagios_sensor_sub', help='Subscription name')
+    parser.add_argument('--timeout', type=int, default=TIMEOUT, help='Timeout')
     cmd_options = parser.parse_args()
 
     nagios = NagiosResponse("All messages received correctly.")
     ams = ArgoMessagingService(endpoint=cmd_options.host, token=cmd_options.token, project=cmd_options.project)
     try:
-        if ams.has_topic(cmd_options.topic, timeout=TIMEOUT):
-            ams.delete_topic(cmd_options.topic, timeout=TIMEOUT)
+        if ams.has_topic(cmd_options.topic, timeout=cmd_options.timeout):
+            ams.delete_topic(cmd_options.topic, timeout=cmd_options.timeout)
 
-        if ams.has_sub(cmd_options.subscription, timeout=TIMEOUT):
-            ams.delete_sub(cmd_options.subscription, timeout=TIMEOUT)
+        if ams.has_sub(cmd_options.subscription, timeout=cmd_options.timeout):
+            ams.delete_sub(cmd_options.subscription, timeout=cmd_options.timeout)
 
-        ams.create_topic(cmd_options.topic, timeout=TIMEOUT)
-        ams.create_sub(cmd_options.subscription, cmd_options.topic, timeout=TIMEOUT)
+        ams.create_topic(cmd_options.topic, timeout=cmd_options.timeout)
+        ams.create_sub(cmd_options.subscription, cmd_options.topic, timeout=cmd_options.timeout)
 
     except AmsException as e:
         nagios.writeCriticalMessage(e.msg)
@@ -50,24 +50,22 @@ def main():
         hash_obj = hashlib.md5(msg_txt + attr_name + attr_value)
         msg_orig.add(hash_obj.hexdigest())
 
-    #print(msg_orig)
-
     try:
-        msgs = ams.publish(cmd_options.topic, msg_array, timeout=TIMEOUT)
+        msgs = ams.publish(cmd_options.topic, msg_array, timeout=cmd_options.timeout)
 
         ackids = []
         rcv_msg = set()
-        for id, msg in ams.pull_sub(cmd_options.subscription, MSG_NUM - 1, True, timeout=TIMEOUT):
+        for id, msg in ams.pull_sub(cmd_options.subscription, MSG_NUM - 1, True, timeout=cmd_options.timeout):
             attr = msg.get_attr()
 
             hash_obj = hashlib.md5(msg.get_data() + attr.keys()[0] + attr.values()[0])
             rcv_msg.add(hash_obj.hexdigest())
 
         if ackids:
-            ams.ack_sub(cmd_options.subscription, ackids, timeout=TIMEOUT)
+            ams.ack_sub(cmd_options.subscription, ackids, timeout=cmd_options.timeout)
 
-        ams.delete_topic(cmd_options.topic, timeout=TIMEOUT)
-        ams.delete_sub(cmd_options.subscription, timeout=TIMEOUT)
+        ams.delete_topic(cmd_options.topic, timeout=cmd_options.timeout)
+        ams.delete_sub(cmd_options.subscription, timeout=cmd_options.timeout)
 
     except AmsException as e:
         nagios.writeCriticalMessage(e.msg)
@@ -85,5 +83,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
