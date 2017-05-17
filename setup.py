@@ -24,8 +24,9 @@ setup(name=NAME,
       long_description='''
       This package includes probes for ARGO components.
       Currently it supports the following components:
-        - ARGO Web API
         - ARGO Consumer log
+        - ARGO Messaging Service
+        - ARGO Web API
         - POEM
       ''',
       url='http://argoeu.github.io/',
