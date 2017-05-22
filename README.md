@@ -7,7 +7,7 @@ It checks if there are available AR and status data for a selected day.
 
 The usage of the script is:
 ```sh
-$ usage: web-api.py [-h] [-H HOSTNAME] [--tenant TENANT] [--rtype RTYPE] [--token TOKEN]
+$ usage: web-api [-h] [-H HOSTNAME] [--tenant TENANT] [--rtype RTYPE] [--token TOKEN]
               [--day DAY] [--unused-reports Report1 Report2] [-t TIMEOUT] [-v DEBUG]
 ```
 
@@ -25,5 +25,5 @@ where:
 ### Usage example
 
 ```sh
-$ ./web-api.py -H web-api.test.com --tenant tenantname --rtype ar --token 12321312313123 --unused-reports  Report1 Report2  --day 1 -t 180 -v
+$ ./web-api -H web-api.test.com --tenant tenantname --rtype ar --token 12321312313123 --unused-reports  Report1 Report2  --day 1 -t 180 -v
 ```
