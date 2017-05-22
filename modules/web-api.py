@@ -38,28 +38,23 @@ def errmsg_from_excp(e):
             strerr += str(e) + ' '
 
 
-def checkUnusedReports(tenant, hostname, reportName):
+def checkUnusedReports(reportName, arguments):
 
     """ We have a number of reports that are not used anymore.
         In order not to check these reports we define which one
         to ignore
         Args:
-            tenant: the tenant to test
-            hostname: we use the hostname to check for devel, or production
             reportName: the name of the report to check
+            arguments: the input arguments
     """
+    Reports = ''
     #reports we dont use in production
-    EGI_prod = ['Cloud', 'Critical-Fedcloud', 'Fedcloud']
-    EGI_devel = ['Cloud', 'Critical-Fedcloud', 'Fedcloud']
+    if arguments.unusedreports:
+        Reports = arguments.unusedreports.split(',')
 
-    if (tenant == 'EGI' and hostname == 'api.argo.grnet.gr'):
-        if reportName in EGI_prod:
-            return 1
-
-    if (tenant == 'EGI' and hostname == 'web-api-devel.argo.grnet.gr'):
-        if reportName in EGI_devel:
-            return 1
-
+    if Reports!='':
+        if reportName in Reports:
+           return 1
 
 def createAPICallUrl(arguments):
     """Create the main API Call Reports Url to get the
@@ -209,6 +204,7 @@ def main():
     parser.add_argument('-tenant', dest='tenant', required=True, type=str, default='EGI', help='tenant to check. Default EGI')
     parser.add_argument('-rtype', dest='rtype', required=True, type=str, default='ar', help='status or ar (default ar)')
     parser.add_argument('-token', dest='token', required=True, type=str, default='test_token', help='authentication token')
+    parser.add_argument('-unused-reports', dest='unusedreports', required=False, type=str,help='Add unused reports from API as a string separated by comma')
     parser.add_argument('-day', dest='day', required=False, type=int, default=1, help='days to check (ex. 1 for yesterday, 2 for days ago) default yesterday')
     parser.add_argument('-t', dest='timeout', required=False, type=int, default=180)
     parser.add_argument('-v', dest='debug', help='Set verbosity level', action='count', default=0)
