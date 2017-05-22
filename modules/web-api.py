@@ -73,7 +73,7 @@ def createAPICallUrl(arguments):
         headers = {'Accept': 'application/json', 'x-api-key': arguments.token}
 
         #make the call to get the json 
-        profiles = requests.get('https://' + arguments.hostname + API_REPORTS, headers = headers)
+        profiles = requests.get('https://' + arguments.hostname + API_REPORTS, headers = headers,timeout=arguments.timeout)
         profilesjson = profiles.json()
 
         #raise an HTTPError exception for non 200 status codes
