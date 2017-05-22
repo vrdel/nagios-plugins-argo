@@ -154,7 +154,7 @@ def CheckResults(arguments, profilesjson):
                 urlToAPI = 'https://' + arguments.hostname + pathToUse+'/' +reportName+'/'+reportTopologyGroup+'?start_time='+start+'&end_time='+end
                 resultsAPI = requests.get(urlToAPI, headers = headers)
             count+=1;
-            if arguments.debug == 'on':
+            if arguments.debug:
                 debug = debug +  "[CheckResults] API call:"+ urlToAPI
             resultsjson = resultsAPI.json()
 
@@ -187,7 +187,7 @@ def CheckResults(arguments, profilesjson):
             except:
                 ProbeDescription[reportName] = 'CRITICAL - cannot retrieve status from ' +reportName
 
-    return ProbeDescription
+    return ProbeDescription, debug
 
 
 def debugValues(arguments):
@@ -195,7 +195,7 @@ def debugValues(arguments):
         Args:
             arguments: the input arguments
     """
-    if arguments.debug =='on':
+    if arguments.debug:
         print "[debugValues] - hostname:"+ arguments.hostname
         print "[debugValues] - tenant:" + arguments.tenant
         print "[debugValues] - rtype:" + arguments.rtype
@@ -214,7 +214,7 @@ def main():
     parser.add_argument('-token', dest='token', required=True, type=str, default='test_token', help='authentication token')
     parser.add_argument('-day', dest='day', required=False, type=int, default=1, help='days to check (ex. 1 for yesterday, 2 for days ago) default yesterday')
     parser.add_argument('-t', dest='timeout', required=False, type=int, default=180)
-    parser.add_argument('-d', dest='debug', required=False, type=str, default='off')
+    parser.add_argument('-v', dest='debug', help='Set verbosity level', action='count', default=0)
     arguments = parser.parse_args()
     NAGIOS_RESULT = 0
 
@@ -225,7 +225,7 @@ def main():
         raise SystemExit(2)
 
     profilesjson = createAPICallUrl(arguments)
-    data = CheckResults(arguments, profilesjson)
+    data,debugData = CheckResults(arguments, profilesjson)
     Description = ''
     for item in data:
         if 'WARNING' in data[item]:
@@ -240,14 +240,15 @@ def main():
         debugValues(arguments)
         raise SystemExit(0)
     elif NAGIOS_RESULT == 1:
+        print debugData
         debugValues(arguments)
         raise SystemExit(1)
     elif NAGIOS_RESULT == 2:
         print 'CRITICAL - Problem with  %s reports for tenant %s return results  ' % (arguments.rtype, arguments.tenant)
         print 'Description:'+Description
+        print debugData
         debugValues(arguments)
         raise SystemExit(2)
 
 if __name__ == "__main__":
     main()
-                                                                                                                                                                                                                              252,1         B
