@@ -149,10 +149,9 @@ def CheckResults(arguments, profilesjson):
             #make the call to get the json 
             if arguments.rtype == 'ar':
                 urlToAPI = 'https://' + arguments.hostname + pathToUse+'/' +reportName+'/'+reportTopologyGroup+'?start_time='+start+'&end_time='+end+'&granularity=daily'
-                resultsAPI = requests.get(urlToAPI, headers = headers)
             else:
                 urlToAPI = 'https://' + arguments.hostname + pathToUse+'/' +reportName+'/'+reportTopologyGroup+'?start_time='+start+'&end_time='+end
-                resultsAPI = requests.get(urlToAPI, headers = headers)
+            resultsAPI = requests.get(urlToAPI, headers = headers, timeout=arguments.timeout)
             count+=1;
             if arguments.debug:
                 debug = debug +  "[CheckResults] API call:"+ urlToAPI
@@ -202,8 +201,6 @@ def debugValues(arguments):
         print "[debugValues] - token:" + arguments.token
         if arguments.timeout!='':
             print "[debugValues] - timeout:" + str(arguments.timeout)
-        print "[debugValues] - debug:" + arguments.debug
-
 
 
 def main():
