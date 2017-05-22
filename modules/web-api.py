@@ -50,7 +50,7 @@ def checkUnusedReports(reportName, arguments):
     Reports = ''
     #reports we dont use in production
     if arguments.unusedreports:
-        Reports = arguments.unusedreports.split(',')
+        Reports = arguments.unusedreports
 
     if Reports!='':
         if reportName in Reports:
@@ -204,7 +204,7 @@ def main():
     parser.add_argument('-tenant', dest='tenant', required=True, type=str, default='EGI', help='tenant to check. Default EGI')
     parser.add_argument('-rtype', dest='rtype', required=True, type=str, default='ar', help='status or ar (default ar)')
     parser.add_argument('-token', dest='token', required=True, type=str, default='test_token', help='authentication token')
-    parser.add_argument('-unused-reports', dest='unusedreports', required=False, type=str,help='Add unused reports from API as a string separated by comma')
+    parser.add_argument('-unused-reports', dest='unusedreports', required=False, type=str, nargs='+', help='Add unused reports from API')
     parser.add_argument('-day', dest='day', required=False, type=int, default=1, help='days to check (ex. 1 for yesterday, 2 for days ago) default yesterday')
     parser.add_argument('-t', dest='timeout', required=False, type=int, default=180)
     parser.add_argument('-v', dest='debug', help='Set verbosity level', action='count', default=0)
