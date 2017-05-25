@@ -38,8 +38,7 @@ def errmsg_from_excp(e):
             strerr += str(e) + ' '
 
 
-def checkUnusedReports(reportName, arguments):
-
+def checkUnusedReports(arguments, reportName):
     """ We have a number of reports that are not used anymore.
         In order not to check these reports we define which one
         to ignore
@@ -56,6 +55,7 @@ def checkUnusedReports(reportName, arguments):
         if reportName in Reports:
            return 1
 
+
 def createAPICallUrl(arguments):
     """Create the main API Call Reports Url to get the
        profile and the topology.
@@ -64,17 +64,17 @@ def createAPICallUrl(arguments):
     """
 
     try:
-        #create the main headers for json call 
+        #create the main headers for json call
         headers = {'Accept': 'application/json', 'x-api-key': arguments.token}
 
-        #make the call to get the json 
+        #make the call to get the json
         profiles = requests.get('https://' + arguments.hostname + API_REPORTS, headers = headers,timeout=arguments.timeout)
         profilesjson = profiles.json()
 
         #raise an HTTPError exception for non 200 status codes
         if profiles.status_code != 200:
            profiles.raise_for_status()
-    #check for connection request 
+    #check for connection request
     except requests.exceptions.RequestException as e:
         print 'CRITICAL - API cannot connect to %s: %s' % ('https://' + arguments.hostname + API_REPORTS,
                                                        errmsg_from_excp(e))
@@ -87,14 +87,15 @@ def createAPICallUrl(arguments):
 
     return profilesjson
 
+
 def convert_date(year,month,day,daytype):
-    """Construct the correct day 
+    """Construct the correct day
        2017-05-16T00:00:00
        Args:
            year: the year
-           month: the month 
+           month: the month
            day: the day
-           daytype: construct the start or end date for the api call 
+           daytype: construct the start or end date for the api call
     """
     orig_date = datetime.datetime(year,month,day)
     orig_date = str(orig_date)
@@ -106,12 +107,13 @@ def convert_date(year,month,day,daytype):
 
     return d
 
+
 def CheckResults(arguments, profilesjson):
-    """Create the correct call based on report profile and topology. 
+    """Create the correct call based on report profile and topology.
        Iterate to profiles and check results
        Args:
-           arguments: the main input arguments 
-           profilesjson: the json for a tenant with the reports 
+           arguments: the main input arguments
+           profilesjson: the json for a tenant with the reports
     """
 
     allReports = len(profilesjson['data']);
@@ -128,20 +130,20 @@ def CheckResults(arguments, profilesjson):
     ProbeDescription = {}
     debug = ""
 
-    #get all report names 
+    #get all report names
     while (count < allReports):
         reportName = profilesjson['data'][count]['info']['name']
         reportTopologyGroup = profilesjson['data'][count]['topology_schema']['group']['group']['type']
-        
+
         #if we dont use this report anymore just continue
-        if checkUnusedReports(arguments.tenant, arguments.hostname, reportName)==1:
+        if checkUnusedReports(arguments, reportName)==1:
             count+=1
             continue;
 
-        #create the main headers for json call 
+        #create the main headers for json call
         try:
             headers = {'Accept': 'application/json', 'x-api-key': arguments.token}
-            #make the call to get the json 
+            #make the call to get the json
             if arguments.rtype == 'ar':
                 urlToAPI = 'https://' + arguments.hostname + pathToUse+'/' +reportName+'/'+reportTopologyGroup+'?start_time='+start+'&end_time='+end+'&granularity=daily'
             else:
@@ -155,7 +157,7 @@ def CheckResults(arguments, profilesjson):
             #raise an HTTPError exception for non 200 status codes
             if resultsAPI.status_code != 200:
                 resultsAPI.raise_for_status()
-        #check for connection request 
+        #check for connection request
         except requests.exceptions.RequestException as e:
             ProbeDescription['Connection'+reportName] = 'CRITICAL - Reports cannot connect to (https://' + arguments.hostname + pathToUse+'/' +reportName+'/'+reportTopologyGroup +'-'+ errmsg_from_excp(e)
 
@@ -164,7 +166,7 @@ def CheckResults(arguments, profilesjson):
             ProbeDescription['Status'+reportName] = 'CRITICAL - Status code error. Cannot connect to (https://' + arguments.hostname + pathToUse+'/' +reportName+'/'+reportTopologyGroup +'-'+ errmsg_from_excp(e)
 
 
-        #when we have results report 
+        #when we have results report
         #check the json for the string we need
         if (arguments.rtype=='ar'):
             ProbeDescription[reportName] = 'OK - Availability for ' +reportName +' is OK'
@@ -185,7 +187,7 @@ def CheckResults(arguments, profilesjson):
 
 
 def debugValues(arguments):
-    """ Print debug values. 
+    """ Print debug values.
         Args:
             arguments: the input arguments
     """
@@ -211,7 +213,7 @@ def main():
     arguments = parser.parse_args()
     NAGIOS_RESULT = 0
 
-    #check arguments 
+    #check arguments
     if arguments.rtype not in ('status','ar'):
         NAGIOS_RESULT = 2
         print 'CRITICAL: wrong value at argument rtype. rtype must be ar or status'
