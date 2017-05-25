@@ -5,7 +5,7 @@
 Name: nagios-plugins-argo
 Summary: ARGO components related probes.
 Version: 0.1.7
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: ASL 2.0
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -44,6 +44,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu May 25 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.7-3%{?dist}
+- ams-probe arguments named according to Nagios guidelines
 * Thu May 25 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.7-2%{?dist}
 - argo-ams-library as dependency
 - web_api corrected unused reports function call

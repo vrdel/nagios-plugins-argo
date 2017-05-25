@@ -12,12 +12,12 @@ def main():
     TIMEOUT = 180
 
     parser = ArgumentParser(description="Nagios sensor for AMS")
-    parser.add_argument('--host', type=str, default='messaging-devel.argo.grnet.gr', help='FQDN of AMS Service')
+    parser.add_argument('-H', dest='host', type=str, default='messaging-devel.argo.grnet.gr', help='FQDN of AMS Service')
     parser.add_argument('--token', type=str, required=True, help='Given token')
     parser.add_argument('--project', type=str, required=True, help='Project registered in AMS Service')
     parser.add_argument('--topic', type=str, default='nagios_sensor_topic', help='Given topic')
     parser.add_argument('--subscription', type=str, default='nagios_sensor_sub', help='Subscription name')
-    parser.add_argument('--timeout', type=int, default=TIMEOUT, help='Timeout')
+    parser.add_argument('-t', dest='timeout', type=int, default=TIMEOUT, help='Timeout')
     cmd_options = parser.parse_args()
 
     nagios = NagiosResponse("All messages received correctly.")
