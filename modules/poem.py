@@ -137,13 +137,19 @@ def main():
         print 'CRITICAL - cannot connect to %s: %s' % ('https://' + arguments.hostname + MIP_API,
                                                        errmsg_from_excp(e))
         raise SystemExit(2)
+    except ValueError as e:
+        print 'CRITICAL - %s - %s' % (MIP_API, errmsg_from_excp(e))
+        raise SystemExit(2)
 
     try:
-        profiles = requests.get('https://' + arguments.hostname + '/poem/api/0.2/json/profiles', cert=(arguments.cert, arguments.key), verify=True)
+        profiles = requests.get('https://' + arguments.hostname + PR_API, cert=(arguments.cert, arguments.key), verify=True)
         profilesjson = profiles.json()
     except requests.exceptions.RequestException as e:
         print 'CRITICAL - cannot connect to %s: %s' % ('https://' + arguments.hostname + PR_API,
                                                        errmsg_from_excp(e))
+        raise SystemExit(2)
+    except ValueError as e:
+        print 'CRITICAL - %s - %s' % (PR_API, errmsg_from_excp(e))
         raise SystemExit(2)
 
 
