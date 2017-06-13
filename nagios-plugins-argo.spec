@@ -44,6 +44,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Jun 6 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.7-4%{?dist}
+- sprint release minor version bump
 * Thu May 25 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.7-3%{?dist}
 - ams-probe arguments named according to Nagios guidelines
 * Thu May 25 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.7-2%{?dist}
