@@ -18,14 +18,20 @@ def check_file_ok(fname):
     if os.path.isfile(fname):
         fh = open(fname, 'r')
         if fh.read().strip() == 'True':
-            return 0
+            return True
         else:
-            return 2
+            return False
 
     else:
-        return 1
+        return False
 
 def process_customer_jobs(files, cust_header, cust_conf, root_dir, date_sufix, nagios):
+    def all_false(elements):
+        for e in elements:
+            if e:
+                return False
+        return True
+
     file_names=[downtime_state, poem_state, topology_state, weights_state]
     if files is not None:
         file_names = files
@@ -35,24 +41,25 @@ def process_customer_jobs(files, cust_header, cust_conf, root_dir, date_sufix, n
         for filename in file_names:
             if filename == downtime_state:
                 dates = copy.copy(date_sufix)[:-1]
-                dates.append(datetime.today().strftime("%Y_%m_%d"))
+                dates.insert(0, datetime.today().strftime("%Y_%m_%d"))
             else:
                 dates = date_sufix
 
             false_count = 0
+            rets = list()
 
             for sufix in dates:
-                full_name = cust_conf.get_fullstatedir(root_dir, cust_header, job)+ '/' + filename + '_' + sufix
-                ret_val = check_file_ok(full_name)
+                last_should_ok = None
 
-                if ret_val != 0:
-                    false_count += 1
-                    if (false_count == len(dates)):
-                        nagios.setCode(nagios.CRITICAL)
-                        nagios.writeCriticalMessage("Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", File: " + filename.replace("-ok", "").upper() + " not ok for last " + str(len(dates)) + " days!")
-                    elif (false_count == len(dates) - 1 and nagios.getCode() <= nagios.WARNING):
-                        nagios.setCode(nagios.WARNING)
-                        nagios.writeWarningMessage("Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", File: " + filename.replace("-ok", "").upper() + " not ok.")
+                full_name = cust_conf.get_fullstatedir(root_dir, cust_header, job)+ '/' + filename + '_' + sufix
+                rets.append(check_file_ok(full_name))
+
+            if (all_false(rets)):
+                nagios.setCode(nagios.CRITICAL)
+                nagios.writeCriticalMessage("Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", File: " + filename.replace("-ok", "").upper() + " not ok for last " + str(len(dates)) + " days!")
+            elif (all_false(rets[:-1])):
+                nagios.setCode(nagios.WARNING)
+                nagios.writeWarningMessage("Customer: " + cust_conf.get_custname(cust_header) + ", Job: " + job + ", File: " + filename.replace("-ok", "").upper() + " not ok.")
 
 def process_customer(cmd_options, root_directory, date_sufix, nagios):
     customer_conf = CustomerConf(sys.argv[0], cmd_options.config, jobattrs='')
