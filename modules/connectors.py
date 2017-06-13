@@ -49,8 +49,6 @@ def process_customer_jobs(files, cust_header, cust_conf, root_dir, date_sufix, n
             rets = list()
 
             for sufix in dates:
-                last_should_ok = None
-
                 full_name = cust_conf.get_fullstatedir(root_dir, cust_header, job)+ '/' + filename + '_' + sufix
                 rets.append(check_file_ok(full_name))
 
