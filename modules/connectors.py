@@ -72,12 +72,10 @@ def main():
     parser.add_argument('-f', dest='filename', required=False, type=str, nargs='+', help='file names to monitor. Default: downtimes-ok poem-ok topology-ok weights-ok')
     cmd_options = parser.parse_args()
 
-    opts =  {"InputState": ["SaveDir", "Days"]}
-    global_conf = Global(None, opts)
-
-    options = global_conf.parse();
-    root_directory = options.values()[0]
-    days_num = int(options.values()[1])
+    global_conf = Global(None)
+    options = global_conf.parse()
+    root_directory = options['inputstatesavedir']
+    days_num = int(options['inputstatedays'])
     todays_date = datetime.today()
 
     days = []
