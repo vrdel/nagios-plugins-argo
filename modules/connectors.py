@@ -15,7 +15,7 @@ topology_state = 'topology-ok'
 weights_state = 'weights-ok'
 
 def check_file_ok(fname):
-    if os.path.isfile(fname):
+    if os.stat(fname) and os.path.isfile(fname):
         fh = open(fname, 'r')
         if fh.read().strip() == 'True':
             return True
@@ -87,7 +87,23 @@ def main():
         date_sufix.append(day.strftime("%Y_%m_%d"))
 
     nagios = NagiosResponse("All connectors are working fine.")
-    process_customer(cmd_options, root_directory, date_sufix, nagios)
+    try:
+        process_customer(cmd_options, root_directory, date_sufix, nagios)
+
+    except OSError as e:
+        nagios.setCode(nagios.CRITICAL)
+        if getattr(e, 'filename', False):
+            nagios.writeCriticalMessage('{0} {1}'.format(repr(e), e.filename))
+        else:
+            nagios.writeCriticalMessage(repr(e))
+        print nagios.getMsg()
+        raise SystemExit(nagios.getCode())
+
+    except Exception as e:
+        nagios.setCode(nagios.CRITICAL)
+        nagios.writeCriticalMessage(repr(e))
+        print nagios.getMsg()
+        raise SystemExit(nagios.getCode())
 
     print(nagios.getMsg())
     raise SystemExit(nagios.getCode())
