@@ -92,7 +92,10 @@ def main():
 
     except OSError as e:
         nagios.setCode(nagios.CRITICAL)
-        nagios.writeCriticalMessage('{0} {1}'.format(repr(e), e.filename))
+        if getattr(e, 'filename', False):
+            nagios.writeCriticalMessage('{0} {1}'.format(repr(e), e.filename))
+        else:
+            nagios.writeCriticalMessage(repr(e))
         print nagios.getMsg()
         raise SystemExit(nagios.getCode())
 
