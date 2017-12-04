@@ -4,8 +4,8 @@
 
 Name: nagios-plugins-argo
 Summary: ARGO components related probes.
-Version: 0.1.7
-Release: 4%{?dist}
+Version: 0.1.8
+Release: 1%{?dist}
 License: ASL 2.0
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -44,6 +44,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Dec 4 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.8-1%{?dist}
+- connectors-probe warning logic revised
+- connectors-probe updated global.conf parsing 
 * Tue Jun 6 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.7-4%{?dist}
 - sprint release minor version bump
 * Thu May 25 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.7-3%{?dist}
