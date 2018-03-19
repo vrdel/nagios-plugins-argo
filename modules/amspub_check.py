@@ -7,6 +7,18 @@ from nagios_plugins_argo.NagiosResponse import NagiosResponse
 maxcmdlength = 128
 timeout = 10
 
+def parse_result(query):
+    try:
+        w, r = query.split('+')
+
+        w = w.split(':')[1]
+        r = int(r.split(':')[1])
+
+    except (ValueError, KeyError):
+        return (w, 'error')
+
+    return (w, r)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -32,7 +44,19 @@ def main():
         sock.send(' '.join(arguments.query), maxcmdlength)
         data = sock.recv(maxcmdlength)
 
-        print data
+        lr = list()
+        for r in data.split():
+            lr.append(parse_result(r))
+
+        error = False
+        for e in lr:
+            if e[1] == 'error':
+                nr.setCode(2)
+                nr.writeCriticalMessage('Worker {0} {1}'.format(e[0], e[1]))
+                error = True
+        if error:
+            print nr.getMsg()
+            raise SystemExit(nr.getCode())
 
     except socket.timeout as e:
         nr.setCode(2)
