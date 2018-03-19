@@ -5,7 +5,7 @@ import sys, socket, select
 from nagios_plugins_argo.NagiosResponse import NagiosResponse
 
 maxcmdlength = 128
-
+timeout = 10
 
 def main():
     parser = argparse.ArgumentParser()
@@ -17,14 +17,23 @@ def main():
 
     try:
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.setblocking(0)
+        sock.settimeout(timeout)
         sock.connect(arguments.socket)
         sock.send(' '.join(arguments.query), maxcmdlength)
         data = sock.recv(maxcmdlength)
         print data
         sock.close()
+
+    except socket.timeout as e:
+        nr.setCode(2)
+        nr.writeCriticalMessage('Socket response timeout after {0}s'.format(timeout))
+        print nr.getMsg()
+        raise SystemExit(nr.getCode())
+
     except socket.error as e:
         nr.setCode(2)
-        nr.writeCriticalMessage(str(e))
+        nr.writeCriticalMessage('Socket error: {0}'.format(str(e)))
         print nr.getMsg()
         raise SystemExit(nr.getCode())
 
