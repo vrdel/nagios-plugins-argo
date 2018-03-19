@@ -7,6 +7,7 @@ from nagios_plugins_argo.NagiosResponse import NagiosResponse
 maxcmdlength = 128
 timeout = 10
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', dest='socket', required=True, type=str, help='AMS inspection socket')
@@ -19,11 +20,12 @@ def main():
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.setblocking(0)
         sock.settimeout(timeout)
+
         sock.connect(arguments.socket)
         sock.send(' '.join(arguments.query), maxcmdlength)
         data = sock.recv(maxcmdlength)
+
         print data
-        sock.close()
 
     except socket.timeout as e:
         nr.setCode(2)
@@ -36,6 +38,9 @@ def main():
         nr.writeCriticalMessage('Socket error: {0}'.format(str(e)))
         print nr.getMsg()
         raise SystemExit(nr.getCode())
+
+    finally:
+        sock.close()
 
 if __name__ == "__main__":
     main()
