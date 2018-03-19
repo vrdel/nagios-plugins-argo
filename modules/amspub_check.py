@@ -25,6 +25,7 @@ def main():
     parser.add_argument('-s', dest='socket', required=True, type=str, help='AMS inspection socket')
     parser.add_argument('-q', dest='query', action='append', required=True, type=str, help='Query')
     parser.add_argument('-c', dest='threshold', action='append', required=True, type=int, help='Threshold')
+    parser.add_argument('-t', dest='timeout', required=False, type=int, help='Timeout')
     arguments = parser.parse_args()
 
     nr = NagiosResponse()
@@ -35,10 +36,15 @@ def main():
         print nr.getMsg()
         raise SystemExit(nr.getCode())
 
+    if arguments.timeout:
+        timeo = arguments.timeout
+    else:
+        timeo = timeout
+
     try:
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.setblocking(0)
-        sock.settimeout(timeout)
+        sock.settimeout(timeo)
 
         sock.connect(arguments.socket)
         sock.send(' '.join(arguments.query), maxcmdlength)
@@ -86,7 +92,7 @@ def main():
 
     except socket.timeout as e:
         nr.setCode(2)
-        nr.writeCriticalMessage('Socket response timeout after {0}s'.format(timeout))
+        nr.writeCriticalMessage('Socket response timeout after {0}s'.format(timeo))
         print nr.getMsg()
         raise SystemExit(nr.getCode())
 
