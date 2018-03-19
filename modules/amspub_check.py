@@ -24,7 +24,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', dest='socket', required=True, type=str, help='AMS inspection socket')
     parser.add_argument('-q', dest='query', action='append', required=True, type=str, help='Query')
-    parser.add_argument('-t', dest='threshold', action='append', required=True, type=str, help='Threshold')
+    parser.add_argument('-c', dest='threshold', action='append', required=True, type=int, help='Threshold')
     arguments = parser.parse_args()
 
     nr = NagiosResponse()
@@ -57,6 +57,32 @@ def main():
         if error:
             print nr.getMsg()
             raise SystemExit(nr.getCode())
+
+        error = False
+        nr.setCode(0)
+        i = 0
+        while i < len(lr):
+            e = lr[i]
+            if e[1] < arguments.threshold[i]:
+                nr.setCode(2)
+                nr.writeCriticalMessage('Worker {0} published {1} (threshold {2})'.format(e[0], e[1], arguments.threshold[i]))
+                error = True
+            i+=1
+
+        if error:
+            print nr.getMsg()
+            raise SystemExit(nr.getCode())
+        else:
+            i = 0
+            nr.setCode(0)
+            while i < len(lr):
+                e = lr[i]
+                nr.writeOkMessage('Worker {0} published {1} (threshold {2})'.format(e[0], e[1], arguments.threshold[i]))
+                i+=1
+
+            print nr.getMsg()
+            raise SystemExit(nr.getCode())
+
 
     except socket.timeout as e:
         nr.setCode(2)
