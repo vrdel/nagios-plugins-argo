@@ -1,4 +1,4 @@
-class NagiosResponse:
+class NagiosResponse(object):
     _msgBagWarning = []
     _msgBagCritical = []
     _okMsg = ""
