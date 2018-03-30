@@ -9,6 +9,7 @@ Currently, there are probes for:
 - ARGO Messaging Nagios publisher
 - ARGO Web API
 - POEM service
+- Compute Engine dataflow
 
 ## ARGO Messaging service
 
@@ -101,3 +102,30 @@ where:
 ```sh
 $ ./web-api -H web-api.test.com --tenant tenantname --rtype ar --token 12321312313123 --unused-reports  Report1 Report2  --day 1 -t 180 -v
 ```
+
+## Compute Engine dataflow
+
+This is a probe for checking the compute engine's dataflow, making sure that all components work as intented.
+The checking involves the probe publishing a message to AMS, and expecting after some time, to find the same message produced by the system.If the message is identical, and has been delivered in reasonable time, then everything is ok, otherwise, we examine the result, to figure out, what went wrong with the system.
+
+Usage of the script:
+```sh
+$ ce_check.py [-h] [-H HOSTNAME] [--project Project]  [--token TOKEN]
+              [--push_topic Push Topic] [--pull_subscription Pull Subscription] [-t TIMEOUT]
+			  
+```
+ - (-H): the hostname of the AMS endpoint.
+ - (--project): the project that holds the topics and subscriptions.
+ - (--token): the authorization token.
+ - (--push_topic): the name of the topic, where the probe should publish its data.
+ - (--pull_subscription): the name of the subscription, where the probe will check for system's response.
+ - (--push_subscription): the name of the subscription, where the System will read from.
+ - (-t): A timeout option(seconds) for AMS library requests.
+ - (-i): a timewindow(seconds) between publishing and retrieving the message that is expected and considered 'healthy' for the system.
+ 
+### Usage example
+ 
+ ```sh
+ $ ce_check -H ams-endpoint.gr --project TEST_PR --token test_token --push_topic test_topic --pull_subscription test_sub --push_subscription test_sub_2 -t 180 -i 500
+ 
+ ```
