@@ -63,7 +63,7 @@ def main():
         raise SystemExit(nagios.getCode())
 
     except AmsException as e:
-        nagios_report(nagios, 'critical', e.msg())
+        nagios_report(nagios, 'critical', e.msg)
 
 
 def nagios_report(nagios, status, msg):
