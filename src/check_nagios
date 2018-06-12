@@ -211,7 +211,7 @@ foreach my $service (@services) {
                         $state = CRITICAL;
                         last;
                     } else {
-                        my $diff = ($service->{last_update} - $service->{last_check})/1000;
+                        my $diff = time() - $service->{last_check}/1000;
                         if ($diff > $plugin->opts->age) {
                             $answer .= "Service $host/".$service->{description}." on Nagios $nagios is older than ".$plugin->opts->age." seconds, last check was $diff seconds ago.";
                             $state = CRITICAL;
