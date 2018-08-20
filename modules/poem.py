@@ -118,7 +118,7 @@ def check_metric_conf(profiles, arguments):
     # Extract metrics in a certain profile...
     profile_metrics = set()
     for i in profiles:
-        if arguments.profile in i['description']:
+        if arguments.profile == i['name']:
             for j in i['metric_instances']:
                 profile_metrics.add(j['metric'])
 
@@ -129,11 +129,8 @@ def check_metric_conf(profiles, arguments):
             metrics_name.add(key)
 
     # Check configurations exist...
-    diff = profile_metrics.difference(metrics_name)
-    if diff:
-        return len(diff)
-    else:
-        return len(profile_metrics)
+    inter = profile_metrics.intersection(metrics_name)
+    return len(inter)
 
 
 def main():
