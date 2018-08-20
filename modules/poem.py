@@ -230,8 +230,13 @@ def main():
     # Check configuration...
     numconf = check_metric_conf(profiles, arguments)
 
-    print 'OK - %s has %d distinct service types, %s configurations and %d distinct metrics' \
-          % (arguments.profile, len(servicetypes), numconf, len(metrics))
+    # Check if number of configurations is equal to number of distinct metrics...
+    if numconf == len(metrics):
+        print 'OK - %s has %d distinct service types, %s configurations and %d distinct metrics' \
+              % (arguments.profile, len(servicetypes), numconf, len(metrics))
+    else:
+        print 'WARNING - %s has %d distinct service types and %d distinct metrics. %d metric configurations is missing' \
+        % (arguments.profile, len(servicetypes), len(metrics), len(metrics) - numconf)
     raise SystemExit(0)
 
 if __name__ == "__main__":
