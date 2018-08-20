@@ -99,6 +99,39 @@ def verify_servercert(host, timeout, capath):
 
     return True
 
+def check_metric_conf(profiles, arguments):
+
+    # Load metrics from api...
+    try:
+        metrics = requests.get('https://' + arguments.hostname + '//poem/api/0.2/json/metrics/?tag=production',
+                               cert=(arguments.cert, arguments.key), verify=True)
+        metrics = metrics.json()
+    except requests.exceptions.RequestException as e:
+        print 'CRITICAL - cannot connect to %s: %s' % ('https://' + arguments.hostname +
+                                                       '//poem/api/0.2/json/metrics/?tag=production',
+                                                       errmsg_from_excp(e))
+        raise SystemExit(2)
+    except ValueError as e:
+        print 'CRITICAL - %s - %s' % (MIP_API, errmsg_from_excp(e))
+        raise SystemExit(2)
+
+    # Extract metrics in a certain profile...
+    profile_metrics = set()
+    for i in profiles:
+        if arguments.profile == i['name']:
+            for j in i['metric_instances']:
+                profile_metrics.add(j['metric'])
+
+    # Extract metric names...
+    metrics_name = set()
+    for k in metrics:
+        for key, value in k.items():
+            metrics_name.add(key)
+
+    # Check configurations exist...
+    inter = profile_metrics.intersection(metrics_name)
+    return len(inter)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -194,7 +227,16 @@ def main():
         print 'WARNING - Server certificate will expire in %i days' % (dte - dtn).days
         raise SystemExit(1)
 
-    print 'OK - %s has %d distinct service types and %d distinct metrics' % (arguments.profile, len(servicetypes), len(metrics))
+    # Check configuration...
+    numconf = check_metric_conf(profiles, arguments)
+
+    # Check if number of configurations is equal to number of distinct metrics...
+    if numconf == len(metrics):
+        print 'OK - %s has %d distinct service types, %s configurations and %d distinct metrics' \
+              % (arguments.profile, len(servicetypes), numconf, len(metrics))
+    else:
+        print 'WARNING - %s has %d distinct service types and %d distinct metrics. %d metric configurations is missing' \
+        % (arguments.profile, len(servicetypes), len(metrics), len(metrics) - numconf)
     raise SystemExit(0)
 
 if __name__ == "__main__":
