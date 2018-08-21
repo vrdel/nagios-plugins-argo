@@ -205,7 +205,7 @@ def main():
 
     try:
         for m in matched_profile['metrics']:
-            servicetypes.add(m['name'])
+            metrics.add(m['name'])
     except KeyError:
         print 'CRITICAL - cannot retrieve a value from %s' % MIP_API
         raise SystemExit(2)
@@ -214,7 +214,7 @@ def main():
         for profile in profilesjson:
             if (profile['name'] == arguments.profile):
                 for metric in profile['metric_instances']:
-                    metrics.add(metric['atp_service_type_flavour'])
+                    servicetypes.add(metric['atp_service_type_flavour'])
                 break
     except KeyError:
         print 'CRITICAL - cannot retrieve a value from %s' % PR_API
@@ -228,7 +228,7 @@ def main():
         raise SystemExit(1)
 
     # Check configuration...
-    numconf = check_metric_conf(profiles, arguments)
+    numconf = check_metric_conf(profilesjson, arguments)
 
     # Check if number of configurations is equal to number of distinct metrics...
     if numconf == len(metrics):
