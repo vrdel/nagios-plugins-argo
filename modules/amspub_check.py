@@ -2,10 +2,13 @@
 
 import argparse
 import socket
+import re
+import time
 from nagios_plugins_argo.NagiosResponse import NagiosResponse
 
 maxcmdlength = 128
 timeout = 10
+
 
 def parse_result(query):
     try:
@@ -18,6 +21,17 @@ def parse_result(query):
         return (w, 'error')
 
     return (w, r)
+
+
+def find_max_interval(queries):
+    intervals = list()
+
+    for q in queries:
+        get = q.split('+')[1]
+        i = re.search('[0-9]+$', get).group(0)
+        intervals.append(int(i))
+
+    return max(intervals)
 
 
 def main():
@@ -50,9 +64,21 @@ def main():
         sock.send(' '.join(arguments.query), maxcmdlength)
         data = sock.recv(maxcmdlength)
 
+        starttime = None
         lr = list()
         for r in data.split():
+            if r.startswith('t:'):
+                starttime = int(r.split(':')[1])
+                continue
             lr.append(parse_result(r))
+
+        max = find_max_interval(arguments.query)
+        now = int(time.time())
+        if now - starttime < max:
+            nr.setCode(1)
+            nr.writeWarningMessage('No results yet, ams-publisher is not running for %d minutes' % max)
+            print nr.getMsg()
+            raise SystemExit(nr.getCode())
 
         error = False
         for e in lr:
