@@ -48,10 +48,12 @@ $ ./ams-probe --token T0K3N --host messaging-devel.argo.grnet.gr --project EGI -
 ## ARGO Messaging Nagios publisher
 
 Probe is inspecting AMS publisher running on Nagios monitoring instances. It's
-inspecting trends of published messages for each spawned worker and raises alarm if
-number of published messages of any worker is below expected threshold. It queries local
-inspection socket that publisher exposes and reports back status with the help of NRPE
-Nagios system.
+inspecting trends of published results for each spawned worker and raises
+critical if number of published results of any worker is below expected
+threshold. Additionally, it will raise warning if numbers are not yet available
+i.e. ams-publisher has just started and has not yet published expected number
+of results. It queries local inspection socket that publisher exposes and
+reports back status with the help of NRPE Nagios system.
 
 The usage is:
 
