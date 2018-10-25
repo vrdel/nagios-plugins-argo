@@ -23,7 +23,7 @@ def parse_result(query):
     return (w, r)
 
 
-def find_max_interval(queries):
+def extract_intervals(queries):
     intervals = list()
 
     for q in queries:
@@ -31,7 +31,7 @@ def find_max_interval(queries):
         i = re.search('[0-9]+$', get).group(0)
         intervals.append(int(i))
 
-    return max(intervals)
+    return intervals
 
 
 def main():
@@ -72,9 +72,9 @@ def main():
                 continue
             lr.append(parse_result(r))
 
-        max = find_max_interval(arguments.query)
+        intervals = extract_intervals(arguments.query)
         now = int(time.time())
-        if now - starttime < max:
+        if now - starttime < max(intervals):
             nr.setCode(1)
             nr.writeWarningMessage('No results yet, ams-publisher is not running for %d minutes' % max)
             print nr.getMsg()
@@ -97,7 +97,8 @@ def main():
             e = lr[i]
             if e[1] < arguments.threshold[i]:
                 nr.setCode(2)
-                nr.writeCriticalMessage('Worker {0} published {1} (threshold {2})'.format(e[0], e[1], arguments.threshold[i]))
+                nr.writeCriticalMessage('Worker {0} published {1} (threshold {2} in {3} minutes)'.\
+                                        format(e[0], e[1], arguments.threshold[i], intervals[i]))
                 error = True
             i+=1
 
@@ -109,7 +110,8 @@ def main():
             nr.setCode(0)
             while i < len(lr):
                 e = lr[i]
-                nr.writeOkMessage('Worker {0} published {1} (threshold {2})'.format(e[0], e[1], arguments.threshold[i]))
+                nr.writeOkMessage('Worker {0} published {1} (threshold {2} in {3} minutes)'.\
+                                  format(e[0], e[1], arguments.threshold[i], intervals[i]))
                 i+=1
 
             print nr.getMsg()
