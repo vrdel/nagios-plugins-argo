@@ -2,10 +2,13 @@
 
 import argparse
 import socket
+import re
+import time
 from nagios_plugins_argo.NagiosResponse import NagiosResponse
 
 maxcmdlength = 128
 timeout = 10
+
 
 def parse_result(query):
     try:
@@ -18,6 +21,17 @@ def parse_result(query):
         return (w, 'error')
 
     return (w, r)
+
+
+def extract_intervals(queries):
+    intervals = list()
+
+    for q in queries:
+        get = q.split('+')[1]
+        i = re.search('[0-9]+$', get).group(0)
+        intervals.append(int(i))
+
+    return intervals
 
 
 def main():
@@ -50,9 +64,21 @@ def main():
         sock.send(' '.join(arguments.query), maxcmdlength)
         data = sock.recv(maxcmdlength)
 
+        starttime = None
         lr = list()
         for r in data.split():
+            if r.startswith('t:'):
+                starttime = int(r.split(':')[1])
+                continue
             lr.append(parse_result(r))
+
+        intervals = extract_intervals(arguments.query)
+        now = int(time.time())
+        if now - starttime < max(intervals):
+            nr.setCode(1)
+            nr.writeWarningMessage('No results yet, ams-publisher is not running for %d minutes' % max)
+            print nr.getMsg()
+            raise SystemExit(nr.getCode())
 
         error = False
         for e in lr:
@@ -71,7 +97,8 @@ def main():
             e = lr[i]
             if e[1] < arguments.threshold[i]:
                 nr.setCode(2)
-                nr.writeCriticalMessage('Worker {0} published {1} (threshold {2})'.format(e[0], e[1], arguments.threshold[i]))
+                nr.writeCriticalMessage('Worker {0} published {1} (threshold {2} in {3} minutes)'.\
+                                        format(e[0], e[1], arguments.threshold[i], intervals[i]))
                 error = True
             i+=1
 
@@ -83,7 +110,8 @@ def main():
             nr.setCode(0)
             while i < len(lr):
                 e = lr[i]
-                nr.writeOkMessage('Worker {0} published {1} (threshold {2})'.format(e[0], e[1], arguments.threshold[i]))
+                nr.writeOkMessage('Worker {0} published {1} (threshold {2} in {3} minutes)'.\
+                                  format(e[0], e[1], arguments.threshold[i], intervals[i]))
                 i+=1
 
             print nr.getMsg()
