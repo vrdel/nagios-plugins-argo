@@ -74,9 +74,9 @@ def main():
 
         intervals = extract_intervals(arguments.query)
         now = int(time.time())
-        if now - starttime < max(intervals):
+        if now - starttime < 60 * max(intervals):
             nr.setCode(1)
-            nr.writeWarningMessage('No results yet, ams-publisher is not running for %d minutes' % max)
+            nr.writeWarningMessage('No results yet, ams-publisher is not running for %d minutes' % max(intervals))
             print nr.getMsg()
             raise SystemExit(nr.getCode())
 
