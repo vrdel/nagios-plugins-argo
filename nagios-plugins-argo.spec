@@ -4,7 +4,7 @@
 
 Name: nagios-plugins-argo
 Summary: ARGO components related probes.
-Version: 0.1.10
+Version: 0.1.11
 Release: 1%{?dist}
 License: ASL 2.0
 Source0: %{name}-%{version}.tar.gz
@@ -44,6 +44,12 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Nov 8 2018 Daniel Vrcic <daniel.vrcic@gmail.com>, Katarina Zailac <kzailac@srce.hr>, Emir Imamagic <eimamagi@srce.hr>, Angelos Tsalapatis <agelos.tsal@gmail.com> - 0.1.11-1%{?dist}
+- ARGO-1369 Check POEM metric configuration API
+- ARGO-1271 Publisher probe should display queried time interval on result
+- ARGO 1126 Probe for monitoring the compute engine-minor bug fix
+- ARGO-1097 Probe for monitoring the compute engine
+- ARGO-985 Refine last_update logic of check_nagios sensor
 * Tue Mar 27 2018 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.9-1%{?dist}
 - added argo-nagios-ams-publisher
 * Mon Dec 4 2017 Daniel Vrcic <daniel.vrcic@gmail.com> - 0.1.8-1%{?dist}
