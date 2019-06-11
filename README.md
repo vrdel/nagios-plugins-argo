@@ -10,6 +10,7 @@ Currently, there are probes for:
 - ARGO Web API
 - POEM service
 - Compute Engine dataflow
+- Argo authentication service
 
 ## ARGO Messaging service
 
@@ -129,5 +130,42 @@ $ ce_check.py [-h] [-H HOSTNAME] [--project Project]  [--token TOKEN]
  
  ```sh
  $ ce_check -H ams-endpoint.gr --project TEST_PR --token test_token --push_topic test_topic --pull_subscription test_sub --push_subscription test_sub_2 -t 180 -i 500
+ 
+ ```
+ 
+ ## Argo Authentication Service
+
+This is a probe for checking that the authentication service is able to perform mappings 
+for both the Argo messaging service and the Argo web api.
+
+Usage of the script:
+```sh
+$ authn_check.py [-h] --authn-host AUTHN_HOST --authn-port AUTHN_PORT
+                      --cert CERT --key KEY --ams-token AMS_TOKEN
+                      [--ams-service AMS_SERVICE] --ams-host AMS_HOST
+                      --webapi-token WEB_API_TOKEN
+                      [--webapi-service WEB_API_SERVICE] --webapi-host
+                      WEB_API_HOST [--verify]
+			  
+```
+ - (--authn-host): Authn host.
+ - (--authn-port): Authn port.
+ - (--cert): Path to the certificate file.
+ - (--key): Path to the certificate's key.
+ - (--ams-token): Expected ams token.
+ - (--ams-service): The name of the service in authn(default is ams).
+ - (--ams-host): The AMS host that authn should target.
+ - (--webapi-token): Expected webapi token.
+ - (--webapi-service): The name of the service in authn(default is web-api).
+ - (--webapi-host): The WEB API host that authn should target.
+ - (--verify): SSL verification(default is false).
+
+### Usage example
+ 
+ ```sh
+ $ ./authn_check.py --authn-host 127.0.0.1 --authn-port 8081 
+ -cert /path/to/hostcert.pem -key /path/to//hostkey.pem 
+ --webapi-token tOk3n --webapi-host 127.0.0.1 --ams-token tOk3n
+ --ams-host 127.0.0.1 --verify
  
  ```
