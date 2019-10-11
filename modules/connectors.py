@@ -10,7 +10,7 @@ from argo_egi_connectors.config import Global, CustomerConf
 from NagiosResponse import NagiosResponse
 
 downtime_state = 'downtimes-ok'
-poem_state = 'poem-ok'
+metricprofile_state = 'metricprofile-ok'
 topology_state = 'topology-ok'
 weights_state = 'weights-ok'
 
@@ -32,7 +32,7 @@ def process_customer_jobs(files, cust_header, cust_conf, root_dir, date_sufix, n
                 return False
         return True
 
-    file_names=[downtime_state, poem_state, topology_state, weights_state]
+    file_names=[downtime_state, metricprofile_state, topology_state, weights_state]
     if files is not None:
         file_names = files
 
@@ -62,6 +62,7 @@ def process_customer_jobs(files, cust_header, cust_conf, root_dir, date_sufix, n
 def process_customer(cmd_options, root_directory, date_sufix, nagios):
     customer_conf = CustomerConf(sys.argv[0], cmd_options.config, jobattrs='')
     customer_conf.parse()
+    import ipdb; ipdb.set_trace()
 
     for cust_header in customer_conf.get_customers():
         process_customer_jobs(cmd_options.filename, cust_header, customer_conf, root_directory, date_sufix, nagios)
