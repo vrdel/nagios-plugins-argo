@@ -1,21 +1,15 @@
 #!/usr/bin/env python
 
 from OpenSSL.SSL import TLSv1_METHOD, Context, Connection
-from OpenSSL.SSL import VERIFY_PEER, VERIFY_FAIL_IF_NO_PEER_CERT
+from OpenSSL.SSL import VERIFY_PEER
 from OpenSSL.SSL import Error as PyOpenSSLError
-from OpenSSL.SSL import OP_NO_SSLv3
 from OpenSSL.SSL import WantReadError as SSLWantReadError
 
-import json, requests
+import requests
 import argparse
 
 import datetime
-import httplib
-import os
-import re
-import signal
 import socket
-import sys
 
 from time import sleep
 
@@ -24,11 +18,11 @@ HOSTKEY = "/etc/grid-security/hostkey.pem"
 CAPATH = "/etc/grid-security/certificates/"
 
 MIP_API = '/api/v2/metrics'
-PR_API = '/poem/api/0.2/json/profiles'
 
 strerr = ''
 num_excp_expand = 0
 server_expire = None
+
 
 def errmsg_from_excp(e):
     global strerr, num_excp_expand
@@ -99,39 +93,6 @@ def verify_servercert(host, timeout, capath):
 
     return True
 
-def check_metric_conf(profiles, arguments):
-
-    # Load metrics from api...
-    try:
-        metrics = requests.get('https://' + arguments.hostname + '//poem/api/0.2/json/metrics/?tag=production',
-                               cert=(arguments.cert, arguments.key), verify=True)
-        metrics = metrics.json()
-    except requests.exceptions.RequestException as e:
-        print 'CRITICAL - cannot connect to %s: %s' % ('https://' + arguments.hostname +
-                                                       '//poem/api/0.2/json/metrics/?tag=production',
-                                                       errmsg_from_excp(e))
-        raise SystemExit(2)
-    except ValueError as e:
-        print 'CRITICAL - %s - %s' % (MIP_API, errmsg_from_excp(e))
-        raise SystemExit(2)
-
-    # Extract metrics in a certain profile...
-    profile_metrics = set()
-    for i in profiles:
-        if arguments.profile == i['name']:
-            for j in i['metric_instances']:
-                profile_metrics.add(j['metric'])
-
-    # Extract metric names...
-    metrics_name = set()
-    for k in metrics:
-        for key, value in k.items():
-            metrics_name.add(key)
-
-    # Check configurations exist...
-    inter = profile_metrics.intersection(metrics_name)
-    return len(inter)
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -170,59 +131,13 @@ def main():
                                headers=headers, cert=(arguments.cert,
                                                       arguments.key),
                                verify=True)
-        metricsjson = metrics.json()
+        metrics.json()
     except requests.exceptions.RequestException as e:
         print 'CRITICAL - cannot connect to %s: %s' % ('https://' + arguments.hostname + MIP_API,
                                                        errmsg_from_excp(e))
         raise SystemExit(2)
     except ValueError as e:
         print 'CRITICAL - %s - %s' % (MIP_API, errmsg_from_excp(e))
-        raise SystemExit(2)
-
-    try:
-        profiles = requests.get('https://' + arguments.hostname + PR_API, cert=(arguments.cert, arguments.key), verify=True)
-        profilesjson = profiles.json()
-    except requests.exceptions.RequestException as e:
-        print 'CRITICAL - cannot connect to %s: %s' % ('https://' + arguments.hostname + PR_API,
-                                                       errmsg_from_excp(e))
-        raise SystemExit(2)
-    except ValueError as e:
-        print 'CRITICAL - %s - %s' % (PR_API, errmsg_from_excp(e))
-        raise SystemExit(2)
-
-
-    profile, matched_profile = None, None
-    try:
-        for profile in metricsjson[0]['profiles']:
-            if profile['name'] == arguments.profile:
-                matched_profile = profile
-                break
-    except KeyError:
-        print 'CRITICAL - cannot retrieve a value from %s' % MIP_API
-        raise SystemExit(2)
-
-    if not matched_profile:
-        print 'CRITICAL - POEM does not have %s profile' % (arguments.profile)
-        raise SystemExit(2)
-
-    servicetypes = set()
-    metrics = set()
-
-    try:
-        for m in matched_profile['metrics']:
-            metrics.add(m['name'])
-    except KeyError:
-        print 'CRITICAL - cannot retrieve a value from %s' % MIP_API
-        raise SystemExit(2)
-
-    try:
-        for profile in profilesjson:
-            if (profile['name'] == arguments.profile):
-                for metric in profile['metric_instances']:
-                    servicetypes.add(metric['atp_service_type_flavour'])
-                break
-    except KeyError:
-        print 'CRITICAL - cannot retrieve a value from %s' % PR_API
         raise SystemExit(2)
 
     global server_expire
@@ -232,16 +147,6 @@ def main():
         print 'WARNING - Server certificate will expire in %i days' % (dte - dtn).days
         raise SystemExit(1)
 
-    # Check configuration...
-    numconf = check_metric_conf(profilesjson, arguments)
-
-    # Check if number of configurations is equal to number of distinct metrics...
-    if numconf == len(metrics):
-        print 'OK - %s has %d distinct service types, %s configurations and %d distinct metrics' \
-              % (arguments.profile, len(servicetypes), numconf, len(metrics))
-    else:
-        print 'WARNING - %s has %d distinct service types and %d distinct metrics. %d metric configurations is missing' \
-        % (arguments.profile, len(servicetypes), len(metrics), len(metrics) - numconf)
     raise SystemExit(0)
 
 if __name__ == "__main__":
