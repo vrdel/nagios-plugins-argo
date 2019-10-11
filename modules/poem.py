@@ -23,7 +23,7 @@ HOSTCERT = "/etc/grid-security/hostcert.pem"
 HOSTKEY = "/etc/grid-security/hostkey.pem"
 CAPATH = "/etc/grid-security/certificates/"
 
-MIP_API = '/poem/api/0.2/json/metrics_in_profiles?vo_name=ops'
+MIP_API = '/api/v2/metrics'
 PR_API = '/poem/api/0.2/json/profiles'
 
 strerr = ''
@@ -140,6 +140,7 @@ def main():
     parser.add_argument('--cert', dest='cert', default=HOSTCERT, type=str, help='Certificate')
     parser.add_argument('--key', dest='key', default=HOSTKEY, type=str, help='Certificate key')
     parser.add_argument('--capath', dest='capath', default=CAPATH, type=str, help='CA directory')
+    parser.add_argument('-k', dest='token', required=True, type=str, help='API token')
     parser.add_argument('-t', dest='timeout', required=True, type=int, default=180)
     arguments = parser.parse_args()
 
@@ -153,7 +154,7 @@ def main():
         print "CRITICAL - Connection error: %s" % errmsg_from_excp(e)
         raise SystemExit(2)
     except socket.timeout as e:
-        print "CRITICAL - Connection timeout after %s seconds" % args.timeout
+        print "CRITICAL - Connection timeout after %s seconds" % arguments.timeout
         raise SystemExit(2)
 
     # verify client certificate
@@ -164,7 +165,11 @@ def main():
         raise SystemExit(2)
 
     try:
-        metrics = requests.get('https://' + arguments.hostname + MIP_API, cert=(arguments.cert, arguments.key), verify=True)
+        headers = {'x-api-key': arguments.token}
+        metrics = requests.get('https://' + arguments.hostname + MIP_API,
+                               headers=headers, cert=(arguments.cert,
+                                                      arguments.key),
+                               verify=True)
         metricsjson = metrics.json()
     except requests.exceptions.RequestException as e:
         print 'CRITICAL - cannot connect to %s: %s' % ('https://' + arguments.hostname + MIP_API,
