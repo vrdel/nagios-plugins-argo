@@ -62,7 +62,6 @@ def process_customer_jobs(files, cust_header, cust_conf, root_dir, date_sufix, n
 def process_customer(cmd_options, root_directory, date_sufix, nagios):
     customer_conf = CustomerConf(sys.argv[0], cmd_options.config, jobattrs='')
     customer_conf.parse()
-    import ipdb; ipdb.set_trace()
 
     for cust_header in customer_conf.get_customers():
         process_customer_jobs(cmd_options.filename, cust_header, customer_conf, root_directory, date_sufix, nagios)

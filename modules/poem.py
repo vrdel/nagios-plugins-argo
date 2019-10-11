@@ -101,7 +101,7 @@ def main():
     parser.add_argument('--cert', dest='cert', default=HOSTCERT, type=str, help='Certificate')
     parser.add_argument('--key', dest='key', default=HOSTKEY, type=str, help='Certificate key')
     parser.add_argument('--capath', dest='capath', default=CAPATH, type=str, help='CA directory')
-    parser.add_argument('-k', dest='token', required=True, type=str, help='API token')
+    parser.add_argument('--token', dest='token', required=True, type=str, help='API token')
     parser.add_argument('-t', dest='timeout', required=True, type=int, default=180)
     arguments = parser.parse_args()
 
