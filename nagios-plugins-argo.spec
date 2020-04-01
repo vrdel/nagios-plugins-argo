@@ -4,7 +4,7 @@
 
 Name: nagios-plugins-argo
 Summary: ARGO components related probes.
-Version: 0.1.11
+Version: 0.1.12
 Release: 1%{?dist}
 License: ASL 2.0
 Source0: %{name}-%{version}.tar.gz
@@ -44,6 +44,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Apr 1 2020 Daniel Vrcic <daniel.vrcic@gmail.com>, Angelos Tsalapatis <agelos.tsal@gmail.com> - 0.1.12-1%{?dist}
+- ARGO-2014 Update connectors internal tests wrt poem connectors changes 
+- ARGO-1752 Authn nagios probe
 * Thu Nov 8 2018 Daniel Vrcic <daniel.vrcic@gmail.com>, Katarina Zailac <kzailac@srce.hr>, Emir Imamagic <eimamagi@srce.hr>, Angelos Tsalapatis <agelos.tsal@gmail.com> - 0.1.11-1%{?dist}
 - ARGO-1369 Check POEM metric configuration API
 - ARGO-1271 Publisher probe should display queried time interval on result
